@@ -28,72 +28,90 @@ This is the central challenge STAMPER_TSLR addresses. Unlike traditional ML syst
 
 ## Architecture
 
-```
-��─────────────────────────────────────────────────────────────────────────────��
-│                              STAMPER_TSLR Platform                          │
-├─────────────────────────────────────────────────────────────────────────────��
-│                                                                             │
-│  ��──────────────��    ��──────────────��    ��──────────────��    ��──────────��  │
-│  │   Sensors    │    │    Logs      │    │   Images     │    │  Events  │  │
-│  │  (IoT/SCADA) │    │  (Text/NLP)  │    │ (Thermal/Vis)│    │ (Discrete)│  │
-│  └──────��───────��    └──────��───────��    └──────��───────��    └────��─────��  │
-│         │                   │                   │                  │         │
-│         ��                   ��                   ��                  ��         │
-│  ��──────────────────────────────────────────────────────────────────────��   │
-│  │                    MODALITY ENCODERS                                  │   │
-│  │  ��─────────�� ��─────────�� ��─────────�� ��─────────�� ��─────────────��    │   │
-│  │  │ Sensor  │ │  Text   │ │  Image  │ │Timeseries│ │  Tabular    │    │   │
-│  │  │ Encoder │ │ Encoder │ │ Encoder │ │ Encoder │ │  Encoder    │    │   │
-│  │  └────��────�� └────��────�� └────��────�� └────��────�� └──────��──────��    │   │
-│  └───────��───────────��───────────��───────────��────────────��───────────��   │
-│          │           │           │           │            │               │
-│          ��           ��           ��           ��            ��               │
-│  ��──────────────────────────────────────────────────────────────────────��   │
-│  │                    CROSS-MODAL FUSION                                 │   │
-│  │  (Early / Late / Cross-Attention)                                     │   │
-│  └────────────────────────────────────��─────────────────────────────────��   │
-│                                       │                                     │
-│                                       ��                                     │
-│  ��──────────────────────────────────────────────────────────────────────��   │
-│  │                    ENSEMBLE ANOMALY DETECTION                         │   │
-│  │  ��─────────────�� ��─────────────�� ��─────────────�� ��─────────────��    │   │
-│  │  │IsolationForest│ │   LOF       │ │ OneClassSVM │ │  Autoencoder │    │   │
-│  │  └──────��──────�� └──────��──────�� └──────��──────�� └──────��──────��    │   │
-│  └─────────��───────────────��───────────────��───────────────��────────────��   │
-│            │               │               │               │                │
-│            ��               ��               ��               ��                │
-│  ��──────────────────────────────────────────────────────────────────────��   │
-│  │                    UNCERTAINTY QUANTIFICATION                         │   │
-│  │  ��─────────────────��  ��─────────────────��  ��─────────────────────��   │   │
-│  │  │ Epistemic       │  │ Aleatoric       │  │ Conformal           │   │   │
-│  │  │ (Ensemble Var)  │  │ (Learned Var)   │  │ Prediction Intervals│   │   │
-│  │  └─────────────────��  └─────────────────��  └─────────────────────��   │   │
-│  └────────────────────────────────────��──────────────────────────────────��   │
-│                                       │                                      │
-│                                       ��                                      │
-│  ��──────────────────────────────────────────────────────────────────────��   │
-│  │                    DECISION & EXPLANATION                             │   │
-│  │  • Prediction + Calibrated Confidence                                 │   │
-│  │  • SHAP Feature Attributions                                          │   │
-│  │  • Counterfactual Explanations                                        │   │
-│  │  • Uncertainty Decomposition                                          │   │
-│  └────────────────────────────────────��──────────────────────────────────��   │
-│                                       │                                      │
-│                    ��──────────────────��──────────────────��                  │
-│                    ��                  ��                  ��                  │
-│           ��─────────────────�� ��───────────────�� ��───────────────��          │
-│           │ High Confidence │ │ Low Confidence│ │  Drift Alert  │          │
-│           │ → Auto-Execute  │ │ → Human Queue │ │ → Retrain     │          │
-│           └─────────────────�� └───────────────�� └───────────────��          │
-│                    │                  │                  │                  │
-│                    └──────────────────��──────────────────��                  │
-│                                       ��                                     │
-│  ��──────────────────────────────────────────────────────────────────────��   │
-│  │                    HUMAN FEEDBACK LOOP                                │   │
-│  │  Approve / Override → Buffer → Retrain → Champion/Challenger → Deploy│   │
-│  └──────────────────────────────────────────────────────────────────────��   │
-│                                                                             │
-��─────────────────────────────────────────────────────────────────────────────��
+```mermaid
+flowchart TD
+    subgraph Modalities[Data Sources]
+        S[Sensors]
+        L[Logs]
+        I[Images]
+        E[Events]
+    end
+
+    subgraph Encoders[Modality Encoders]
+        SE[Sensor Encoder]
+        TE[Text Encoder]
+        IE[Image Encoder]
+        TSE[Timeseries Encoder]
+        TabE[Tabular Encoder]
+    end
+
+    S --> SE
+    L --> TE
+    I --> IE
+    E --> TabE
+
+    subgraph Fusion[Cross-Modal Fusion]
+        F[Early / Late / Cross-Attention]
+    end
+
+    SE --> F
+    TE --> F
+    IE --> F
+    TSE --> F
+    TabE --> F
+
+    subgraph AnomalyDetection[Ensemble Anomaly Detection]
+        IF[IsolationForest]
+        LOF[LOF]
+        OCSVM[OneClassSVM]
+        AE[Autoencoder]
+    end
+
+    F --> IF
+    F --> LOF
+    F --> OCSVM
+    F --> AE
+
+    subgraph Uncertainty[Uncertainty Quantification]
+        Ep[Epistemic]
+        Al[Aleatoric]
+        CP[Conformal Prediction]
+    end
+    
+    IF --> Ep
+    LOF --> Ep
+    OCSVM --> Al
+    AE --> CP
+
+    subgraph Decision[Decision & Explanation]
+        Pred[Prediction + Calibrated Confidence]
+        XAI[SHAP Feature Attributions]
+    end
+
+    Ep --> Pred
+    Al --> Pred
+    CP --> Pred
+    Pred --> XAI
+
+    subgraph Actions[Routing & Intervention]
+        HighConf[High Confidence: Auto-Execute]
+        LowConf[Low Confidence: Human Queue]
+        Drift[Drift Alert: Retrain]
+    end
+
+    Pred --> HighConf
+    Pred --> LowConf
+    Pred --> Drift
+
+    subgraph Feedback[Human Feedback Loop]
+        Approve[Approve / Override]
+        Retrain[Buffer --> Retrain]
+        Deploy[Deploy New Model]
+    end
+
+    LowConf --> Approve
+    Approve --> Retrain
+    Retrain --> Deploy
 ```
 
 ---
@@ -171,6 +189,15 @@ uvicorn main:app --reload --port 8000
 cd frontend
 npm install
 npm run dev
+```
+
+### Option 3: Automated Setup (Windows)
+
+If you are on Windows, you can use the provided setup script to automatically install dependencies and start both the frontend and backend in separate windows.
+
+```powershell
+# Run from the root of the project
+.\setup.ps1
 ```
 
 ---
