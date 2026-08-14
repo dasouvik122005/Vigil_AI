@@ -629,7 +629,7 @@ If you use STAMPER_TSLR in research, please cite:
 ---
 
 <div align="center">
-  <strong>Built with ������ for reliable AI decision-making</strong>
+  <strong>Built with ❤️ for reliable AI decision-making</strong>
   <br>
   <em>"The system must quantify its confidence, explain why a decision was made, detect when its prediction may be unreliable, and request human intervention when necessary."</em>
 </div>
