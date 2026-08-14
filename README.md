@@ -118,20 +118,20 @@ flowchart TD
 
 ## Features
 
-### ��� Core Capabilities
+### 🚀 Core Capabilities
 
 | Feature | Description | Status |
 |---------|-------------|--------|
-| **Multimodal Ingestion** | Sensor streams, text logs, thermal images, time-series, tabular data, discrete events | ��� Phase 3 |
-| **Ensemble Anomaly Detection** | IsolationForest, LOF, OneClassSVM, Autoencoder with uncertainty-weighted voting | ��� Phase 2 |
-| **Uncertainty Quantification** | Epistemic + Aleatoric decomposition, conformal prediction intervals | ��� Phase 2 |
-| **Explainable AI (XAI)** | SHAP local/global explanations, counterfactuals, feature dependence plots | ��� Phase 4 |
-| **Concept Drift Detection** | KS-test (data), ADWIN (concept), PSI (prediction) with automated retraining | ��� Phase 2 |
-| **Human-in-the-Loop** | Intervention queue, approve/override, feedback-driven adaptation | �� MVP |
-| **Real-time Streaming** | WebSocket-based live decision feed with automatic reconnection | ��� Phase 5 |
-| **Hard Mode Resilience** | Graceful degradation with 20-30% missing/corrupted data | �� MVP |
+| **Multimodal Ingestion** | Sensor streams, text logs, thermal images, time-series, tabular data, discrete events | 📅 Phase 3 |
+| **Ensemble Anomaly Detection** | IsolationForest, LOF, OneClassSVM, Autoencoder with uncertainty-weighted voting | 📅 Phase 2 |
+| **Uncertainty Quantification** | Epistemic + Aleatoric decomposition, conformal prediction intervals | 📅 Phase 2 |
+| **Explainable AI (XAI)** | SHAP local/global explanations, counterfactuals, feature dependence plots | 📅 Phase 4 |
+| **Concept Drift Detection** | KS-test (data), ADWIN (concept), PSI (prediction) with automated retraining | 📅 Phase 2 |
+| **Human-in-the-Loop** | Intervention queue, approve/override, feedback-driven adaptation | ⭐ MVP |
+| **Real-time Streaming** | WebSocket-based live decision feed with automatic reconnection | 📅 Phase 5 |
+| **Hard Mode Resilience** | Graceful degradation with 20-30% missing/corrupted data | ⭐ MVP |
 
-### ��� Platform Features
+### 🛠️ Platform Features
 
 | Feature | Description |
 |---------|-------------|
@@ -520,7 +520,7 @@ docker pull ghcr.io/gittridib22/stamper-tslr/frontend:latest
 
 ## Roadmap
 
-### �� Phase 1: Foundation (Complete)
+### ✅ Phase 1: Foundation (Complete)
 - [x] Configuration management (Pydantic Settings)
 - [x] Structured logging & Prometheus metrics
 - [x] OpenTelemetry tracing setup
@@ -530,35 +530,35 @@ docker pull ghcr.io/gittridib22/stamper-tslr/frontend:latest
 - [x] docker-compose local stack
 - [x] GitHub Actions CI pipeline
 
-### ��� Phase 2: Core ML Enhancements (In Progress)
+### 🚧 Phase 2: Core ML Enhancements (In Progress)
 - [ ] Uncertainty quantification (epistemic + aleatoric + conformal)
 - [ ] Algorithm ensemble (IF, LOF, OC-SVM, Autoencoder)
 - [ ] Concept drift detection (KS, ADWIN, PSI)
 - [ ] Champion/challenger automated retraining
 
-### ��� Phase 3: Multimodal Support
+### 📅 Phase 3: Multimodal Support
 - [ ] Extensible modality schema
 - [ ] Sensor, Text, Image, Time-series, Tabular encoders
 - [ ] Cross-modal fusion (early/late/cross-attention)
 - [ ] Missing modality robustness
 
-### ��� Phase 4: Explainability (XAI)
+### 🔍 Phase 4: Explainability (XAI)
 - [ ] SHAP integration (TreeSHAP + KernelSHAP)
 - [ ] Global feature importance
 - [ ] Counterfactual explanations
 - [ ] Frontend visualization components
 
-### ��� Phase 5: Real-time Streaming
+### ⚡ Phase 5: Real-time Streaming
 - [ ] WebSocket endpoints
 - [ ] Frontend WebSocket migration
 - [ ] Connection pooling & scaling
 
-### ��� Phase 6: Async & Persistence
+### 💾 Phase 6: Async & Persistence
 - [ ] Celery + Redis task queue
 - [ ] PostgreSQL persistence
 - [ ] Model versioning & artifact storage
 
-### ��� Phase 7: Production Hardening
+### 🛡️ Phase 7: Production Hardening
 - [ ] Kubernetes manifests (dev/staging/prod overlays)
 - [ ] Canary deployments with automated rollback
 - [ ] Comprehensive Grafana dashboards
