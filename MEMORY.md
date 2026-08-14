@@ -5,7 +5,7 @@ This file serves as a persistent memory and progress tracker for the STAMPER_TSL
 ## Current State
 - **Project Goal**: Build an AI-powered Adaptive Decision Intelligence Platform (Hackathon Track 1).
 - **Repository**: Connected to `https://github.com/GITtridib22/STAMPER_TSLR.git`
-- **Status**: The MVP prototype is built and running locally. Both FastAPI backend and Vite/React frontend are fully functional. README, requirements.txt, and setup.ps1 have been added for easier deployment.
+- **Status**: The MVP prototype is built and running locally. Both FastAPI backend and Vite/React frontend are fully functional. README, requirements.txt, and setup.ps1 have been added for easier deployment. A `vercel.json` file has been added for deploying the entire monorepo to Vercel.
 
 ## Next Steps
 - Implement a more complex machine learning model in Python to replace the mock confidence scoring.
