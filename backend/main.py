@@ -1,9 +1,11 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-import random
 from typing import Optional, List, Dict
 import time
+
+from data_generator import DataStreamer
+from ml_engine import AdaptiveDecisionEngine
 
 app = FastAPI(title="Adaptive Decision Intelligence API")
 
@@ -19,9 +21,9 @@ app.add_middleware(
 class MultimodalData(BaseModel):
     id: str
     timestamp: float
-    text_input: Optional[str] = None
-    sensor_reading: Optional[float] = None
-    image_features: Optional[List[float]] = None
+    temperature: Optional[float] = None
+    pressure: Optional[float] = None
+    vibration: Optional[float] = None
     source_reliable: bool = True
 
 class DecisionResponse(BaseModel):
@@ -31,8 +33,13 @@ class DecisionResponse(BaseModel):
     explanation: str
     requires_human: bool
 
-# Mock database for intervention queue
+# Initialize our new modules
+streamer = DataStreamer(filename="sensor_data.csv")
+ai_engine = AdaptiveDecisionEngine(historical_data_path="sensor_data.csv")
+
+# Mock database for intervention queue and storage
 intervention_queue = []
+historical_decisions = {}
 
 @app.get("/api/health")
 def health_check():
@@ -41,20 +48,20 @@ def health_check():
 @app.get("/api/stream", response_model=List[MultimodalData])
 def get_data_stream(count: int = 5):
     """
-    Simulates a stream of multimodal data.
-    Implements Hard Mode: 20-30% of data is missing or corrupted.
+    Streams realistic data from CSV.
+    Implements Hard Mode: missing fields are handled dynamically.
     """
+    raw_batch = streamer.get_next_batch(count=count)
+    
     stream = []
-    for _ in range(count):
-        is_corrupted = random.random() < 0.25 # 25% chance of missing data
-        
+    for raw in raw_batch:
         data = MultimodalData(
-            id=f"evt_{random.randint(1000, 9999)}",
+            id=f"evt_{int(time.time()*1000)}_{len(stream)}",
             timestamp=time.time(),
-            text_input="Sample observation from edge device" if not is_corrupted else None,
-            sensor_reading=round(random.uniform(20.0, 100.0), 2) if not is_corrupted else None,
-            image_features=[random.random() for _ in range(3)] if not is_corrupted else None,
-            source_reliable=not is_corrupted
+            temperature=raw['temperature'],
+            pressure=raw['pressure'],
+            vibration=raw['vibration'],
+            source_reliable=not raw['is_corrupted']
         )
         stream.append(data)
     return stream
@@ -62,41 +69,30 @@ def get_data_stream(count: int = 5):
 @app.post("/api/decision", response_model=DecisionResponse)
 def make_decision(data: MultimodalData):
     """
-    Simulates AI decision making, anomaly detection and confidence scoring.
+    Uses the ML Engine for prediction, anomaly detection and confidence scoring.
     """
-    # Calculate simulated confidence based on data completeness
-    missing_fields = 0
-    if data.text_input is None: missing_fields += 1
-    if data.sensor_reading is None: missing_fields += 1
-    if data.image_features is None: missing_fields += 1
+    data_dict = {
+        'temperature': data.temperature,
+        'pressure': data.pressure,
+        'vibration': data.vibration
+    }
     
-    # Base confidence is high if all data is present
-    base_confidence = 0.95
-    confidence = base_confidence - (missing_fields * 0.3)
+    # Store raw data for future human feedback
+    historical_decisions[data.id] = data_dict
     
-    # Add some randomness to confidence
-    confidence = max(0.1, min(0.99, confidence + random.uniform(-0.1, 0.1)))
+    # 1. Run real ML inference
+    result = ai_engine.predict(data_dict)
     
-    # Anomaly detection logic (mocked)
-    is_anomaly = False
-    if data.sensor_reading and data.sensor_reading > 85.0:
-        is_anomaly = True
-        
-    prediction = "ANOMALY_DETECTED" if is_anomaly else "NORMAL_OPERATION"
+    prediction = "ANOMALY_DETECTED" if result["is_anomaly"] else "NORMAL_OPERATION"
     
-    explanation = f"Decision made based on {3 - missing_fields}/3 data modalities. "
-    if is_anomaly:
-        explanation += "Sensor reading exceeded normal thresholds."
-    elif missing_fields > 0:
-        explanation += "Some data streams are unavailable, relying on partial information."
-        
-    requires_human = confidence < 0.70
+    # 2. Hard Mode Check: Does the AI trust itself?
+    requires_human = result["confidence"] < 0.70
     
     response = DecisionResponse(
         data_id=data.id,
         prediction=prediction,
-        confidence_score=round(confidence, 2),
-        explanation=explanation,
+        confidence_score=round(result["confidence"], 2),
+        explanation=result["explanation"],
         requires_human=requires_human
     )
     
@@ -112,12 +108,29 @@ def get_intervention_queue():
 
 @app.post("/api/interventions/{data_id}/resolve")
 def resolve_intervention(data_id: str, approved: bool, new_prediction: Optional[str] = None):
-    """Resolves an item in the human-in-the-loop queue."""
+    """
+    Resolves an item in the human-in-the-loop queue and
+    FEEDS THE HUMAN CORRECTION BACK INTO THE AI ENGINE to adapt.
+    """
     global intervention_queue
+    
     for item in intervention_queue:
         if item["data_id"] == data_id:
+            # 1. Remove from queue
             intervention_queue = [x for x in intervention_queue if x["data_id"] != data_id]
-            return {"status": "resolved", "data_id": data_id, "approved": approved, "updated": new_prediction}
+            
+            # 2. Human Feedback Loop (Adaptation)
+            raw_data = historical_decisions.get(data_id)
+            if raw_data:
+                # If approved, the original prediction was correct. 
+                # If overridden, the new_prediction is the correct one.
+                final_decision = item["prediction"] if approved else new_prediction
+                is_anomaly_label = (final_decision == "ANOMALY_DETECTED")
+                
+                # Send back to ML Engine to learn!
+                ai_engine.add_human_feedback(raw_data, is_anomaly_label)
+                
+            return {"status": "resolved", "data_id": data_id, "adapted": bool(raw_data)}
     
     raise HTTPException(status_code=404, detail="Item not found in intervention queue")
 

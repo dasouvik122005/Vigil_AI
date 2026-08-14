@@ -75,13 +75,13 @@ function App() {
           
           <div style={{display: 'flex', flexDirection: 'column', gap: '0.5rem'}}>
             {stream.length === 0 ? <p>Waiting for data...</p> : stream.map(item => {
-              const isMissingData = !item.text_input || !item.sensor_reading || !item.image_features;
+              const isMissingData = item.temperature === null || item.pressure === null || item.vibration === null;
               return (
                 <div key={item.id} className="stream-item glass-panel" style={{padding: '0.75rem', marginBottom: '0'}}>
                   <div>
                     <strong>{item.id}</strong>
                     <div style={{fontSize: '0.85rem', color: 'var(--text-muted)'}}>
-                      Sensor: {item.sensor_reading ? item.sensor_reading : 'NULL'} | Text: {item.text_input ? 'Present' : 'NULL'}
+                      Temp: {item.temperature ? item.temperature.toFixed(2) : 'NULL'} | Pressure: {item.pressure ? item.pressure.toFixed(2) : 'NULL'} | Vib: {item.vibration ? item.vibration.toFixed(2) : 'NULL'}
                     </div>
                   </div>
                   {isMissingData ? (
