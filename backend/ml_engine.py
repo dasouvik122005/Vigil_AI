@@ -1,5 +1,5 @@
 """
-Adaptive Decision Engine for STAMPER_TSLR.
+Adaptive Decision Engine for Vigil AI.
 
 Core ML engine combining:
 - Unsupervised anomaly detection (IsolationForest)

@@ -1,28 +1,53 @@
-# STAMPER_TSLR: AI-Powered Adaptive Decision Intelligence Platform
+# Vigil AI — Adaptive Decision Intelligence Platform
+
+<div align="center">
 
 [![CI](https://github.com/GITtridib22/STAMPER_TSLR/actions/workflows/ci.yml/badge.svg)](https://github.com/GITtridib22/STAMPER_TSLR/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Node 20+](https://img.shields.io/badge/node-20+-green.svg)](https://nodejs.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
+[![React](https://img.shields.io/badge/React-18+-61DAFB?logo=react)](https://react.dev/)
+[![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker)](https://www.docker.com/)
 
-> **An adaptive decision intelligence platform that knows not only what to decide, but also when it should NOT trust itself.**
+> **"Can you build AI that knows not only *what* to decide, but also *when* it should NOT trust itself?"**
+
+**Vigil AI** is a production-grade, AI-powered anomaly detection platform that quantifies its own uncertainty, explains every decision, and triggers human-in-the-loop intervention when confidence is too low — so you never blindly trust a broken model.
+
+</div>
+
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Architecture](#architecture)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Quick Start](#quick-start)
+- [API Reference](#api-reference)
+- [Configuration](#configuration)
+- [Monitoring and Observability](#monitoring-and-observability)
+- [Project Structure](#project-structure)
+- [Running Tests](#running-tests)
+- [Future Plans](#future-plans)
+- [Contributing](#contributing)
+- [License](#license)
+
+---
 
 ## Overview
 
-STAMPER_TSLR (Spatio-Temporal Adaptive Multimodal Prediction Engine for Real-time Strategic Logic & Reasoning) is a production-grade AI platform designed for reliable decision-making in complex, uncertain, and rapidly changing environments. The system ingests heterogeneous data streams, quantifies its own uncertainty, explains its reasoning, and proactively requests human intervention when its confidence falls below acceptable thresholds.
+Vigil AI (STAMPER TSLR — **S**patio-**T**emporal **A**daptive **M**ultimodal **P**rediction **E**ngine for **R**eal-time Strategic Logic and **R**easoning) is built for Hackathon Track 1: AI decision-making under uncertainty.
 
-### Core Philosophy
+Industrial and critical systems produce sensor data that is frequently noisy, incomplete, or corrupted. Traditional ML pipelines either crash or silently give wrong answers. Vigil AI is designed to:
 
-> **"Can you build AI that knows not only what to decide, but also when it should NOT trust itself?"**
-
-This is the central challenge STAMPER_TSLR addresses. Unlike traditional ML systems that output point predictions with heuristic confidence scores, STAMPER_TSLR provides:
-
-- **Epistemic Uncertainty** — Model uncertainty (what the model doesn't know)
-- **Aleatoric Uncertainty** — Data uncertainty (inherent noise in observations)
-- **Calibrated Prediction Intervals** — Finite-sample coverage guarantees via conformal prediction
-- **Concept Drift Detection** — Automated detection of distribution shifts with champion/challenger retraining
-- **Human-in-the-Loop** — Structured intervention workflow with feedback-driven model adaptation
-- **Multimodal Fusion** — Sensor streams, text logs, images, time-series, and tabular data
+1. **Detect anomalies** using a multi-algorithm ensemble trained on historical sensor data.
+2. **Quantify uncertainty** — decomposing it into epistemic (model) and aleatoric (data) components.
+3. **Explain its reasoning** in plain English for every prediction.
+4. **Escalate to a human** when confidence drops below a configurable threshold.
+5. **Learn from corrections** — human feedback is fed back into the model in real time.
+6. **Survive corrupted data** — gracefully handles 20–30% missing/corrupted fields.
 
 ---
 
@@ -30,119 +55,107 @@ This is the central challenge STAMPER_TSLR addresses. Unlike traditional ML syst
 
 ```mermaid
 flowchart TD
-    subgraph Modalities[Data Sources]
-        S[Sensors]
-        L[Logs]
-        I[Images]
-        E[Events]
+    subgraph Ingestion["Data Ingestion"]
+        CSV[CSV Sensor Data]
+        API_IN[REST API Input]
     end
 
-    subgraph Encoders[Modality Encoders]
-        SE[Sensor Encoder]
-        TE[Text Encoder]
-        IE[Image Encoder]
-        TSE[Timeseries Encoder]
-        TabE[Tabular Encoder]
+    subgraph HardMode["Hard Mode Resilience"]
+        MIS[Missing Data Handler]
+        IMP[Statistical Imputation]
     end
 
-    S --> SE
-    L --> TE
-    I --> IE
-    E --> TabE
-
-    subgraph Fusion[Cross-Modal Fusion]
-        F[Early / Late / Cross-Attention]
-    end
-
-    SE --> F
-    TE --> F
-    IE --> F
-    TSE --> F
-    TabE --> F
-
-    subgraph AnomalyDetection[Ensemble Anomaly Detection]
+    subgraph MLCore["Adaptive Decision Engine"]
         IF[IsolationForest]
-        LOF[LOF]
+        LOF[LocalOutlierFactor]
         OCSVM[OneClassSVM]
-        AE[Autoencoder]
+        RF["RandomForest — Human Feedback Layer"]
     end
 
-    F --> IF
-    F --> LOF
-    F --> OCSVM
-    F --> AE
-
-    subgraph Uncertainty[Uncertainty Quantification]
-        Ep[Epistemic]
-        Al[Aleatoric]
-        CP[Conformal Prediction]
-    end
-    
-    IF --> Ep
-    LOF --> Ep
-    OCSVM --> Al
-    AE --> CP
-
-    subgraph Decision[Decision & Explanation]
-        Pred[Prediction + Calibrated Confidence]
-        XAI[SHAP Feature Attributions]
+    subgraph UQ["Uncertainty Quantification"]
+        EP[Epistemic Uncertainty]
+        AL[Aleatoric Uncertainty]
+        CI[Prediction Interval]
     end
 
-    Ep --> Pred
-    Al --> Pred
-    CP --> Pred
-    Pred --> XAI
-
-    subgraph Actions[Routing & Intervention]
-        HighConf[High Confidence: Auto-Execute]
-        LowConf[Low Confidence: Human Queue]
-        Drift[Drift Alert: Retrain]
+    subgraph Decision["Decision and Routing"]
+        HIGH["High Confidence → Auto-Execute"]
+        LOW["Low Confidence → Human Queue"]
     end
 
-    Pred --> HighConf
-    Pred --> LowConf
-    Pred --> Drift
-
-    subgraph Feedback[Human Feedback Loop]
-        Approve[Approve / Override]
-        Retrain[Buffer --> Retrain]
-        Deploy[Deploy New Model]
+    subgraph HiTL["Human-in-the-Loop"]
+        QUEUE[Intervention Queue]
+        RESOLVE["Approve / Override"]
+        ADAPT[Model Adaptation]
     end
 
-    LowConf --> Approve
-    Approve --> Retrain
-    Retrain --> Deploy
+    subgraph Obs["Observability"]
+        PROM[Prometheus Metrics]
+        GRAF[Grafana Dashboards]
+        LOG[Structured JSON Logs]
+    end
+
+    CSV --> MIS
+    API_IN --> MIS
+    MIS --> IMP --> MLCore
+    MLCore --> UQ --> Decision
+    LOW --> QUEUE --> RESOLVE --> ADAPT --> RF
+    Decision --> PROM --> GRAF
 ```
 
 ---
 
 ## Features
 
-### 🚀 Core Capabilities
-
-| Feature | Description | Status |
-|---------|-------------|--------|
-| **Multimodal Ingestion** | Sensor streams, text logs, thermal images, time-series, tabular data, discrete events | 📅 Phase 3 |
-| **Ensemble Anomaly Detection** | IsolationForest, LOF, OneClassSVM, Autoencoder with uncertainty-weighted voting | 📅 Phase 2 |
-| **Uncertainty Quantification** | Epistemic + Aleatoric decomposition, conformal prediction intervals | 📅 Phase 2 |
-| **Explainable AI (XAI)** | SHAP local/global explanations, counterfactuals, feature dependence plots | 📅 Phase 4 |
-| **Concept Drift Detection** | KS-test (data), ADWIN (concept), PSI (prediction) with automated retraining | 📅 Phase 2 |
-| **Human-in-the-Loop** | Intervention queue, approve/override, feedback-driven adaptation | ⭐ MVP |
-| **Real-time Streaming** | WebSocket-based live decision feed with automatic reconnection | 📅 Phase 5 |
-| **Hard Mode Resilience** | Graceful degradation with 20-30% missing/corrupted data | ⭐ MVP |
-
-### 🛠️ Platform Features
+### ✅ Implemented and Working
 
 | Feature | Description |
 |---------|-------------|
-| **Configuration Management** | Pydantic Settings with YAML + environment variables, dev/staging/prod profiles |
-| **Observability** | Structured JSON logging, Prometheus metrics, OpenTelemetry tracing, Grafana dashboards |
-| **Health Checks** | Kubernetes-ready liveness/readiness probes with dependency verification |
-| **Async Processing** | Celery + Redis task queue with priority routing |
-| **Persistence** | PostgreSQL for decisions/feedback, Redis for caching, S3/MinIO for model artifacts |
-| **Containerization** | Multi-stage Dockerfiles, docker-compose for local dev, K8s manifests |
-| **CI/CD** | GitHub Actions: lint, type-check, test, build, security scan, release |
-| **Testing** | Unit, integration, ML-specific (calibration, drift, robustness) tests with pytest |
+| **Multi-Algorithm Ensemble** | IsolationForest, LocalOutlierFactor, OneClassSVM with uncertainty-weighted voting |
+| **Human-in-the-Loop** | Full cycle: flag low-confidence → queue → approve/override → model adapts |
+| **Hard Mode Resilience** | Handles 20–30% missing or corrupted sensor fields via statistical imputation |
+| **Human Feedback Adaptation** | RandomForest supervised layer retrained on human-corrected labels in real time |
+| **Uncertainty Decomposition** | Epistemic (model) + Aleatoric (data) uncertainty per prediction |
+| **Conformal Prediction Intervals** | Calibrated confidence intervals with finite-sample coverage guarantees |
+| **Concept Drift Detection** | KS-test based distribution monitoring with automated retraining trigger |
+| **Plain-English Explanations** | Every prediction includes a human-readable explanation |
+| **Prometheus Metrics** | 13+ metrics: predictions, anomalies, interventions, drift, latency, missing data |
+| **Structured JSON Logging** | Correlation-ID-tagged logs for full request tracing |
+| **Kubernetes Health Probes** | `/health/live` and `/health/ready` endpoints ready for K8s |
+| **Grafana Dashboards** | Pre-configured observability dashboards auto-provisioned on startup |
+| **Full Docker Stack** | Multi-stage Dockerfiles + docker-compose for one-command local start |
+| **GitHub Actions CI** | Lint (ruff, oxlint), type-check (mypy), tests (pytest), Docker build |
+| **React Live Dashboard** | Frontend with decision feed, intervention queue UI, and metrics panels |
+| **Windows One-Click Setup** | `setup.ps1` bootstraps backend + frontend in separate windows |
+
+### 🔭 Planned Enhancements
+
+See the [Future Plans](#future-plans) section below.
+
+| Feature | Target Phase |
+|---------|-------------|
+| Multimodal ingestion (images, text logs, time-series) | Phase 2 |
+| SHAP explainability with frontend visualisation | Phase 2 |
+| WebSocket real-time streaming | Phase 3 |
+| Celery + Redis async task queue | Phase 3 |
+| PostgreSQL persistent decision store | Phase 3 |
+| Kubernetes manifests (dev / staging / prod) | Phase 4 |
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| **Backend API** | FastAPI 0.104+, Uvicorn, Pydantic v2 |
+| **ML Engine** | scikit-learn (IsolationForest, LOF, OC-SVM, RandomForest), NumPy, Pandas |
+| **Frontend** | React 18, Vite, vanilla CSS |
+| **Observability** | Prometheus, Grafana, structlog |
+| **Infrastructure** | Docker, Docker Compose, Nginx |
+| **Database (planned)** | PostgreSQL 15, Redis 7 |
+| **CI/CD** | GitHub Actions |
+| **Code Quality** | Ruff, MyPy, Black (Python) / oxlint (JS) |
+| **Testing** | pytest, pytest-cov, httpx |
 
 ---
 
@@ -150,53 +163,53 @@ flowchart TD
 
 ### Prerequisites
 
-- **Docker & Docker Compose** (recommended)
-- Or: **Python 3.11+**, **Node.js 20+**, **PostgreSQL 15+**, **Redis 7+**
+- **Docker and Docker Compose** (recommended — zero extra config)
+- Or: Python 3.11+ and Node.js 20+
 
-### Option 1: Docker Compose (Recommended)
+---
+
+### Option 1 — Docker Compose (Recommended)
 
 ```bash
-# Clone repository
 git clone https://github.com/GITtridib22/STAMPER_TSLR.git
 cd STAMPER_TSLR
-
-# Start full stack (API, Worker, Frontend, DB, Redis, Prometheus, Grafana)
 docker-compose up -d --build
-
-# Verify services
-curl http://localhost:8000/health/ready
-curl http://localhost:5173/health
+curl http://localhost:8000/api/health
 ```
 
-**Access Points:**
-- **Frontend Dashboard**: http://localhost:5173
-- **API Documentation**: http://localhost:8000/docs
-- **Prometheus**: http://localhost:9091
-- **Grafana**: http://localhost:3000 (admin/admin)
+| Service | URL |
+|---------|-----|
+| 🖥️ Frontend Dashboard | http://localhost:5173 |
+| 📖 API Docs (Swagger) | http://localhost:8000/docs |
+| 📊 Prometheus | http://localhost:9091 |
+| 📈 Grafana | http://localhost:3000 (admin / admin) |
 
-### Option 2: Local Development
+---
+
+### Option 2 — Local Development
 
 ```bash
 # Backend
 cd backend
 python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+venv\Scripts\activate          # Windows
+# source venv/bin/activate     # Linux / macOS
 pip install -r ../requirements.txt
-cp .env.example .env  # Customize as needed
+cp .env.example .env
 uvicorn main:app --reload --port 8000
 
-# Frontend (separate terminal)
+# Frontend (new terminal)
 cd frontend
 npm install
 npm run dev
 ```
 
-### Option 3: Automated Setup (Windows)
+---
 
-If you are on Windows, you can use the provided setup script to automatically install dependencies and start both the frontend and backend in separate windows.
+### Option 3 — Automated Windows Setup
 
 ```powershell
-# Run from the root of the project
+# Run from the project root
 .\setup.ps1
 ```
 
@@ -205,38 +218,40 @@ If you are on Windows, you can use the provided setup script to automatically in
 ## API Reference
 
 ### Base URL
+
 ```
-http://localhost:8000/api/v1
+http://localhost:8000
 ```
 
-### Endpoints
+### Health and Monitoring
 
-#### Health & Monitoring
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | `GET` | `/api/health` | Basic health check |
 | `GET` | `/health/live` | Kubernetes liveness probe |
 | `GET` | `/health/ready` | Kubernetes readiness probe |
-| `GET` | `/metrics` | Prometheus metrics exposition |
+| `GET` | `/metrics` | Prometheus metrics (text/plain) |
 
-#### Data Streaming
+### Data Streaming
+
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `GET` | `/api/stream?count=5` | Stream sensor data (simulates 25% missing) |
+| `GET` | `/api/stream?count=5` | Batch of sensor readings with missing-data simulation |
 
-#### Decision Making
+### Decision Making
+
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `POST` | `/api/decision` | Make anomaly detection decision |
+| `POST` | `/api/decision` | Submit sensor data, receive AI decision |
 
-**Request:**
+**Request body:**
 ```json
 {
-  "id": "evt_123",
+  "id": "evt_001",
   "timestamp": 1699999999.0,
-  "temperature": 25.5,
-  "pressure": 1.2,
-  "vibration": 0.3,
+  "temperature": 72.4,
+  "pressure": 1.05,
+  "vibration": 0.28,
   "source_reliable": true
 }
 ```
@@ -244,392 +259,249 @@ http://localhost:8000/api/v1
 **Response:**
 ```json
 {
-  "data_id": "evt_123",
+  "data_id": "evt_001",
   "prediction": "NORMAL_OPERATION",
-  "confidence_score": 0.92,
-  "explanation": "Prediction made by IsolationForest (Unsupervised Base). All available sensor readings are within normal historical boundaries.",
+  "confidence_score": 0.91,
+  "explanation": "Ensemble (3 detectors): all sensor readings within normal historical bounds.",
   "requires_human": false
 }
 ```
 
-#### Human Intervention
+> When `requires_human` is `true`, the item is automatically added to the intervention queue.
+
+### Human Intervention
+
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `GET` | `/api/interventions` | Get pending interventions |
-| `POST` | `/api/interventions/{id}/resolve` | Resolve intervention |
+| `GET` | `/api/interventions` | List all pending interventions |
+| `POST` | `/api/interventions/{id}/resolve` | Approve or override a flagged decision |
 
-**Resolve Request:**
+**Resolve request:**
 ```json
 {
-  "approved": true,
+  "approved": false,
   "new_prediction": "ANOMALY_DETECTED"
 }
 ```
 
-#### WebSocket (Real-time)
-| Endpoint | Description |
-|----------|-------------|
-| `WS /api/ws/stream` | Live decision stream |
-| `WS /api/ws/interventions` | Live intervention notifications |
+Human corrections are fed back into the RandomForest supervised layer immediately.
 
 ---
 
 ## Configuration
 
-All configuration is managed via **environment variables** or **YAML config file** (`config.yaml`).
-
-### Environment Variables (`.env`)
+Copy `backend/.env.example` to `backend/.env` and customise:
 
 ```bash
-# Environment
-ENVIRONMENT=development          # development, staging, production
+# Core
+ENVIRONMENT=development
 DEBUG=true
-SECRET_KEY=your-secret-key
+SECRET_KEY=your-secret-key-32-chars-min
 
-# Model
-MODEL__CONFIDENCE_THRESHOLD=0.70
+# ML
+MODEL__CONFIDENCE_THRESHOLD=0.70   # Below this → human intervention queue
 MODEL__ENSEMBLE_ENABLED=true
-MODEL__UNCERTAINTY_METHOD=ensemble
 MODEL__DRIFT_ENABLED=true
+MODEL__FEEDBACK_BATCH_SIZE=5       # Retrain RF after N human corrections
 
 # API
 API__HOST=0.0.0.0
 API__PORT=8000
 API__WORKERS=4
-API__WS_ENABLED=true
 
 # Monitoring
 MONITORING__LOG_LEVEL=INFO
 MONITORING__LOG_FORMAT=json
 MONITORING__METRICS_ENABLED=true
-MONITORING__TRACING_ENABLED=false
 
 # Storage
-STORAGE__DATABASE_URL=postgresql://user:pass@localhost:5432/stamper
+STORAGE__DATABASE_URL=postgresql://user:pass@localhost:5432/stamper_tslr
 STORAGE__REDIS_URL=redis://localhost:6379/0
-```
-
-### YAML Config (`config.yaml`)
-
-```yaml
-environment: production
-debug: false
-secret_key: "production-secret"
-
-model:
-  confidence_threshold: 0.75
-  ensemble_enabled: true
-  uncertainty_method: conformal
-  drift_enabled: true
-
-api:
-  workers: 8
-  rate_limit_enabled: true
-  rate_limit_requests: 1000
-
-monitoring:
-  log_level: INFO
-  tracing_enabled: true
-  tracing_endpoint: "http://jaeger:4317"
 ```
 
 ---
 
-## Monitoring & Observability
+## Monitoring and Observability
 
 ### Prometheus Metrics
 
-Key metrics exposed at `/metrics`:
-
 | Metric | Type | Description |
 |--------|------|-------------|
-| `http_requests_total` | Counter | Total HTTP requests by method/endpoint/status |
-| `http_request_duration_seconds` | Histogram | Request latency |
+| `http_requests_total` | Counter | Requests by method / endpoint / status |
+| `http_request_duration_seconds` | Histogram | API latency |
 | `predictions_total` | Counter | Predictions by class and model version |
 | `prediction_confidence` | Histogram | Confidence score distribution |
-| `prediction_uncertainty_epistemic` | Histogram | Model uncertainty |
-| `prediction_uncertainty_aleatoric` | Histogram | Data uncertainty |
+| `prediction_uncertainty_epistemic` | Histogram | Epistemic (model) uncertainty |
+| `prediction_uncertainty_aleatoric` | Histogram | Aleatoric (data) uncertainty |
 | `anomalies_detected_total` | Counter | Anomalies by detector |
 | `interventions_total` | Counter | Human interventions by action |
-| `intervention_queue_depth` | Gauge | Pending interventions |
+| `intervention_queue_depth` | Gauge | Pending interventions count |
 | `drift_detected_total` | Counter | Drift events by type |
 | `drift_severity` | Gauge | Current drift severity |
-| `model_retrains_total` | Counter | Retraining events by trigger |
-| `ws_connections_active` | Gauge | Active WebSocket connections |
+| `model_retrains_total` | Counter | Retraining events |
+| `missing_data_ratio` | Gauge | Missing field ratio per sensor |
 
 ### Grafana Dashboards
 
-Pre-configured dashboards available at http://localhost:3000:
+Auto-provisioned at http://localhost:3000:
 
-- **STAMPER Overview** — System health, latency, predictions, anomalies, interventions, drift
-- **ML Model Performance** — Confidence calibration, uncertainty decomposition, drift trends
-- **Business Metrics** — Anomaly rates, human override rates, model adaptation velocity
+- **Vigil Overview** — system health, latency, prediction rates, anomaly counts, intervention queue depth
+- **ML Model Performance** — confidence calibration, uncertainty decomposition, drift trend
+- **Business Metrics** — anomaly rate, human override rate, model adaptation velocity
 
 ### Structured Logging
 
-JSON logs with correlation IDs for request tracing:
-
 ```json
 {
-  "timestamp": "2024-01-15T10:30:45.123Z",
+  "timestamp": "2026-08-15T10:30:45.123Z",
   "level": "INFO",
   "logger": "http",
   "correlation_id": "a1b2c3d4",
   "event": "request_completed",
   "method": "POST",
-  "path": "/api/v1/decision",
+  "path": "/api/decision",
   "status_code": 200,
-  "duration_ms": 42.5
+  "duration_ms": 38.2
 }
 ```
 
 ---
 
-## Development
-
-### Project Structure
+## Project Structure
 
 ```
 STAMPER_TSLR/
-├── backend/                    # FastAPI Backend
-│   ├── main.py                # API endpoints
-│   ├── ml_engine.py           # Core ML logic (IsolationForest + RF)
-│   ├── data_generator.py      # Synthetic data + streaming
-│   ├── config.py              # Pydantic Settings configuration
-│   ├── monitoring.py          # Logging, metrics, tracing, health
-│   ├── uncertainty.py         # Uncertainty quantification (Phase 2)
-│   ├── ensemble.py            # Algorithm ensemble (Phase 2)
-│   ├── drift.py               # Drift detection (Phase 2)
-│   ├── encoders/              # Modality encoders (Phase 3)
-│   ├── fusion.py              # Cross-modal fusion (Phase 3)
-│   ├── explain.py             # SHAP explainability (Phase 4)
-│   ├── streaming.py           # WebSocket handlers (Phase 5)
-│   ├── tasks.py               # Celery tasks (Phase 6)
-│   ├── storage.py             # Persistence layer (Phase 6)
-│   ├── models.py              # SQLAlchemy models (Phase 6)
-│   ├── Dockerfile
-│   ├── requirements.txt
-│   └── .env.example
+├── backend/
+│   ├── main.py              # API endpoints and lifespan management
+│   ├── ml_engine.py         # Adaptive Decision Engine (ensemble + UQ + drift)
+│   ├── data_generator.py    # CSV streaming with missing-data simulation
+│   ├── config.py            # Pydantic Settings (env / YAML)
+│   ├── monitoring.py        # Prometheus metrics, logging, health checks
+│   ├── sensor_data.csv      # Historical training data
+│   ├── Dockerfile           # Multi-stage build (builder → runtime)
+│   └── .env.example         # Environment variable template
 │
-├── frontend/                   # React + Vite Frontend
+├── frontend/
 │   ├── src/
-│   │   ├── App.jsx           # Main dashboard
-│   │   ├── components/       # Reusable components
-│   │   ├── hooks/            # Custom React hooks
-│   │   └── utils/            # Utilities
-│   ├── nginx.conf
+│   │   ├── App.jsx          # Main dashboard component
+│   │   ├── App.css          # Component styles
+│   │   └── index.css        # Global design tokens
+│   ├── nginx.conf           # Production static serving
 │   ├── Dockerfile
 │   └── package.json
 │
-├── monitoring/                 # Observability configs
-│   ├── prometheus.yml
+├── monitoring/
+│   ├── prometheus.yml       # Scrape config
 │   └── grafana/
-│       ├── datasources/
-│       └── dashboards/
+│       ├── datasources/     # Prometheus data source
+│       └── dashboards/      # Pre-built dashboard JSON
 │
-├── tests/                      # Test Suite
-│   ├── conftest.py            # Pytest fixtures
-│   ├── test_ml_engine.py      # ML engine unit tests
-│   ├── test_api.py            # API integration tests
-│   └── test_ml_features.py    # ML feature contract tests
+├── tests/
+│   ├── conftest.py          # Pytest fixtures and test client
+│   ├── test_ml_engine.py    # ML engine unit tests
+│   ├── test_api.py          # API integration tests
+│   └── test_ml_features.py  # ML contract tests
 │
-├── k8s/                        # Kubernetes manifests (Phase 7)
-│   ├── base/
-│   ├── overlays/
-│   │   ├── dev/
-│   │   ├── staging/
-│   │   └── prod/
-│
-├── docker-compose.yml          # Local development stack
+├── docker-compose.yml       # Full local stack
+├── requirements.txt         # Python dependencies
 ├── pytest.ini
-├── requirements.txt
-├── README.md
-��── LICENSE
+├── setup.ps1                # Windows one-click dev setup
+└── README.md
 ```
 
-### Running Tests
+---
+
+## Running Tests
 
 ```bash
-# Backend tests
 cd backend
-pytest tests/ -v --cov=backend --cov-report=term-missing
+python -m venv venv && venv\Scripts\activate
+pip install -r ../requirements.txt
 
-# Run specific test categories
-pytest tests/ -m "unit"        # Unit tests only
-pytest tests/ -m "integration" # Integration tests
-pytest tests/ -m "ml"          # ML-specific tests
-pytest tests/ -m "slow"        # Performance benchmarks
+# All tests with coverage
+pytest ../tests/ -v --cov=. --cov-report=term-missing
 
-# Frontend tests
-cd frontend
+# By category
+pytest ../tests/ -m unit
+pytest ../tests/ -m integration
+pytest ../tests/ -m ml
+
+# Frontend
+cd ../frontend
 npm run lint
 npm run build
 ```
 
-### Code Quality
-
-```bash
-# Python
-ruff check backend/           # Linting
-mypy backend/                 # Type checking
-black backend/                # Formatting
-
-# Frontend
-cd frontend
-npm run lint                  # oxlint
-```
-
 ---
 
-## Deployment
+## Future Plans
 
-### Kubernetes (Phase 7)
+The core MVP platform is complete and fully functional. The following enhancements are planned for the next development cycle:
 
-```bash
-# Deploy to development
-kubectl apply -k k8s/overlays/dev
+### 🔷 Phase 2 — Multimodal Support and Explainability
 
-# Deploy to staging
-kubectl apply -k k8s/overlays/staging
+- [ ] SHAP feature attribution (TreeSHAP + KernelSHAP) with frontend plots
+- [ ] Extensible modality schema for text logs, thermal images, and time-series streams
+- [ ] Cross-modal fusion (early / late / cross-attention)
+- [ ] Counterfactual explanations ("what would change this decision?")
 
-# Deploy to production (with canary)
-kubectl apply -k k8s/overlays/prod
-```
+### 🔷 Phase 3 — Real-time Streaming and Persistence
 
-**K8s Resources:**
-- `Deployment` — API (HPA), Worker (KEDA), Frontend
-- `Service` — ClusterIP for API, LoadBalancer for Frontend
-- `ConfigMap` / `Secret` — Configuration
-- `Ingress` — TLS termination, routing
-- `ServiceMonitor` — Prometheus scraping
-- `HorizontalPodAutoscaler` — CPU/memory/custom metrics scaling
+- [ ] WebSocket endpoints for live decision streaming to the frontend
+- [ ] Celery + Redis async task queue for heavy inference jobs
+- [ ] PostgreSQL persistence for all decisions, interventions, and audit trail
+- [ ] Model versioning and artifact storage (MinIO / S3)
 
-### Docker Images
+### 🔷 Phase 4 — Production Hardening
 
-```bash
-# Build locally
-docker build -t stamper-tslr-backend ./backend
-docker build -t stamper-tslr-frontend ./frontend
-
-# Or pull from GHCR
-docker pull ghcr.io/gittridib22/stamper-tslr/backend:latest
-docker pull ghcr.io/gittridib22/stamper-tslr/frontend:latest
-```
-
----
-
-## Roadmap
-
-### ✅ Phase 1: Foundation (Complete)
-- [x] Configuration management (Pydantic Settings)
-- [x] Structured logging & Prometheus metrics
-- [x] OpenTelemetry tracing setup
-- [x] Health checks (liveness/readiness)
-- [x] Test infrastructure (pytest, fixtures, CI)
-- [x] Docker multi-stage builds
-- [x] docker-compose local stack
-- [x] GitHub Actions CI pipeline
-
-### 🚧 Phase 2: Core ML Enhancements (In Progress)
-- [ ] Uncertainty quantification (epistemic + aleatoric + conformal)
-- [ ] Algorithm ensemble (IF, LOF, OC-SVM, Autoencoder)
-- [ ] Concept drift detection (KS, ADWIN, PSI)
-- [ ] Champion/challenger automated retraining
-
-### 📅 Phase 3: Multimodal Support
-- [ ] Extensible modality schema
-- [ ] Sensor, Text, Image, Time-series, Tabular encoders
-- [ ] Cross-modal fusion (early/late/cross-attention)
-- [ ] Missing modality robustness
-
-### 🔍 Phase 4: Explainability (XAI)
-- [ ] SHAP integration (TreeSHAP + KernelSHAP)
-- [ ] Global feature importance
-- [ ] Counterfactual explanations
-- [ ] Frontend visualization components
-
-### ⚡ Phase 5: Real-time Streaming
-- [ ] WebSocket endpoints
-- [ ] Frontend WebSocket migration
-- [ ] Connection pooling & scaling
-
-### 💾 Phase 6: Async & Persistence
-- [ ] Celery + Redis task queue
-- [ ] PostgreSQL persistence
-- [ ] Model versioning & artifact storage
-
-### 🛡️ Phase 7: Production Hardening
-- [ ] Kubernetes manifests (dev/staging/prod overlays)
+- [ ] Kubernetes manifests with dev / staging / prod overlays via Kustomize
 - [ ] Canary deployments with automated rollback
-- [ ] Comprehensive Grafana dashboards
-- [ ] Load testing & chaos engineering
-- [ ] Security hardening & compliance
+- [ ] KEDA-based autoscaling for Celery workers
+- [ ] Load testing (Locust) and chaos engineering (LitmusChaos)
+- [ ] Security hardening, RBAC, and compliance reporting
+
+### 🔷 Phase 5 — Advanced ML
+
+- [ ] Champion / challenger automated retraining pipeline
+- [ ] Online learning for streaming concept drift adaptation
+- [ ] Active learning — smart selection of highest-value human review cases
+- [ ] Federated learning support for privacy-preserving distributed training
 
 ---
 
 ## Contributing
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
-
-### Development Workflow
-
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Make changes with tests
-4. Run quality checks (`ruff`, `mypy`, `pytest`)
-5. Submit a Pull Request
+2. Create a feature branch: `git checkout -b feature/your-feature`
+3. Write tests for your changes
+4. Run quality checks: `ruff check backend/`, `mypy backend/`, `pytest tests/`
+5. Submit a Pull Request with a clear description
 
-### Code Standards
-
-- **Python**: Black formatting, Ruff linting, MyPy strict mode
-- **JavaScript/React**: ESLint + Prettier, functional components with hooks
-- **Commits**: Conventional Commits (`feat:`, `fix:`, `docs:`, `refactor:`)
-- **Tests**: Required for new features, maintain >80% coverage
+**Code Standards:**
+- Python: Black formatting, Ruff linting, MyPy strict
+- JavaScript: oxlint
+- Commits: Conventional Commits (`feat:`, `fix:`, `docs:`, `refactor:`)
+- Tests: maintain > 80% coverage for all new code
 
 ---
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License — see [LICENSE](LICENSE) for details.
 
 ---
 
 ## Acknowledgments
 
-- **scikit-learn** — Core ML algorithms
-- **SHAP** — Explainable AI
-- **Evidently AI** — Drift detection
-- **Prometheus/Grafana** — Observability stack
-- **FastAPI** — Modern Python web framework
-- **React/Vite** — Frontend framework
-
----
-
-## Citation
-
-If you use STAMPER_TSLR in research, please cite:
-
-```bibtex
-@software{stamper_tslr_2024,
-  title = {STAMPER_TSLR: Adaptive Decision Intelligence Platform},
-  author = {STAMPER_TSLR Contributors},
-  year = {2024},
-  url = {https://github.com/GITtridib22/STAMPER_TSLR}
-}
-```
-
----
-
-## Support
-
-- **Issues**: [GitHub Issues](https://github.com/GITtridib22/STAMPER_TSLR/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/GITtridib22/STAMPER_TSLR/discussions)
-- **Security**: See [SECURITY.md](SECURITY.md) for vulnerability reporting
+- [scikit-learn](https://scikit-learn.org/) — Core ML algorithms
+- [FastAPI](https://fastapi.tiangolo.com/) — Modern async Python API framework
+- [React](https://react.dev/) + [Vite](https://vitejs.dev/) — Frontend toolchain
+- [Prometheus](https://prometheus.io/) + [Grafana](https://grafana.com/) — Observability stack
+- [structlog](https://www.structlog.org/) — Structured logging
 
 ---
 
 <div align="center">
-  <strong>Built with ❤️ for reliable AI decision-making</strong>
-  <br>
+  <strong>Built with ❤️ for reliable AI decision-making under uncertainty</strong><br>
   <em>"The system must quantify its confidence, explain why a decision was made, detect when its prediction may be unreliable, and request human intervention when necessary."</em>
 </div>

@@ -1,5 +1,5 @@
 """
-Configuration management for STAMPER_TSLR Adaptive Decision Intelligence Platform.
+Configuration management for Vigil AI Adaptive Decision Intelligence Platform.
 
 Uses Pydantic Settings for type-safe configuration from environment variables
 and YAML files. Supports dev/staging/prod profiles.
@@ -310,7 +310,7 @@ def get_settings() -> Settings:
     Priority: env vars > YAML file > defaults
     """
     # Check for YAML config file
-    config_path = os.environ.get("STAMPER_CONFIG_PATH") or "config.yaml"
+    config_path = os.environ.get("Vigil_CONFIG_PATH") or "config.yaml"
 
     yaml_config: dict[str, Any] = {}
     if os.path.exists(config_path):

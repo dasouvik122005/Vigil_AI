@@ -472,7 +472,7 @@
   "time": {"from": "now-1h", "to": "now"},
   "timepicker": {},
   "timezone": "",
-  "title": "STAMPER_TSLR Overview",
+  "title": "Vigil AI Overview",
   "uid": "stamper-overview",
   "version": 1
 }

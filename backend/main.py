@@ -1,5 +1,5 @@
 """
-STAMPER_TSLR: Adaptive Decision Intelligence Platform - FastAPI Backend.
+Vigil AI: Adaptive Decision Intelligence Platform - FastAPI Backend.
 
 This module provides the main API endpoints for:
 - Data streaming with missing data simulation (Hard Mode)

@@ -1,4 +1,4 @@
-# Multi-stage Dockerfile for STAMPER_TSLR Frontend
+# Multi-stage Dockerfile for Vigil AI Frontend
 # Stage 1: Builder
 FROM node:20-alpine AS builder
 

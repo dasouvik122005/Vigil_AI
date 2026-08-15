@@ -1,4 +1,4 @@
-# Multi-stage Dockerfile for STAMPER_TSLR Backend
+# Multi-stage Dockerfile for Vigil AI Backend
 # Stage 1: Builder
 FROM python:3.11-slim AS builder
 

@@ -1,7 +1,7 @@
 # setup.ps1
-# Script to install dependencies and start both frontend and backend for STAMPER_TSLR
+# Script to install dependencies and start both frontend and backend for Vigil AI
 
-Write-Host "Setting up STAMPER_TSLR Project..." -ForegroundColor Green
+Write-Host "Setting up Vigil AI Project..." -ForegroundColor Green
 
 # 1. Setup Backend
 Write-Host "Setting up Python Backend..." -ForegroundColor Cyan

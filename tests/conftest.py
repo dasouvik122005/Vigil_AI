@@ -1,5 +1,5 @@
 """
-Pytest configuration and shared fixtures for STAMPER_TSLR tests.
+Pytest configuration and shared fixtures for Vigil AI tests.
 """
 
 import sys

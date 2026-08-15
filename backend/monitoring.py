@@ -1,5 +1,5 @@
 """
-Monitoring and Observability Module for STAMPER_TSLR.
+Monitoring and Observability Module for Vigil AI.
 
 Provides:
 - Structured JSON logging with correlation IDs
