@@ -55,41 +55,41 @@ Industrial and critical systems produce sensor data that is frequently noisy, in
 
 ```mermaid
 flowchart TD
-    subgraph Ingestion["Data Ingestion"]
+    subgraph Ingestion [Data Ingestion]
         CSV[CSV Sensor Data]
         API_IN[REST API Input]
     end
 
-    subgraph HardMode["Hard Mode Resilience"]
+    subgraph HardMode [Hard Mode Resilience]
         MIS[Missing Data Handler]
         IMP[Statistical Imputation]
     end
 
-    subgraph MLCore["Adaptive Decision Engine"]
+    subgraph MLCore [Adaptive Decision Engine]
         IF[IsolationForest]
         LOF[LocalOutlierFactor]
         OCSVM[OneClassSVM]
-        RF["RandomForest — Human Feedback Layer"]
+        RF[RandomForest — Human Feedback Layer]
     end
 
-    subgraph UQ["Uncertainty Quantification"]
+    subgraph UQ [Uncertainty Quantification]
         EP[Epistemic Uncertainty]
         AL[Aleatoric Uncertainty]
         CI[Prediction Interval]
     end
 
-    subgraph Decision["Decision and Routing"]
-        HIGH["High Confidence → Auto-Execute"]
-        LOW["Low Confidence → Human Queue"]
+    subgraph Decision [Decision and Routing]
+        HIGH[High Confidence → Auto-Execute]
+        LOW[Low Confidence → Human Queue]
     end
 
-    subgraph HiTL["Human-in-the-Loop"]
+    subgraph HiTL [Human-in-the-Loop]
         QUEUE[Intervention Queue]
-        RESOLVE["Approve / Override"]
+        RESOLVE[Approve / Override]
         ADAPT[Model Adaptation]
     end
 
-    subgraph Obs["Observability"]
+    subgraph Obs [Observability]
         PROM[Prometheus Metrics]
         GRAF[Grafana Dashboards]
         LOG[Structured JSON Logs]
