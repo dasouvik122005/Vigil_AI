@@ -8,7 +8,7 @@
 [![Node 20+](https://img.shields.io/badge/node-20+-green.svg)](https://nodejs.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
 [![React](https://img.shields.io/badge/React-18+-61DAFB?logo=react)](https://react.dev/)
-[![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker)](https://www.docker.com/)
+
 
 > **"Can you build AI that knows not only *what* to decide, but also *when* it should NOT trust itself?"**
 
@@ -123,8 +123,7 @@ flowchart TD
 | **Structured JSON Logging** | Correlation-ID-tagged logs for full request tracing |
 | **Kubernetes Health Probes** | `/health/live` and `/health/ready` endpoints ready for K8s |
 | **Grafana Dashboards** | Pre-configured observability dashboards auto-provisioned on startup |
-| **Full Docker Stack** | Multi-stage Dockerfiles + docker-compose for one-command local start |
-| **GitHub Actions CI** | Lint (ruff, oxlint), type-check (mypy), tests (pytest), Docker build |
+| **GitHub Actions CI** | Lint (ruff, oxlint), type-check (mypy), tests (pytest) |
 | **React Live Dashboard** | Frontend with decision feed, intervention queue UI, and metrics panels |
 | **Windows One-Click Setup** | `setup.ps1` bootstraps backend + frontend in separate windows |
 
@@ -151,7 +150,7 @@ See the [Future Plans](#future-plans) section below.
 | **ML Engine** | scikit-learn (IsolationForest, LOF, OC-SVM, RandomForest), NumPy, Pandas |
 | **Frontend** | React 18, Vite, vanilla CSS |
 | **Observability** | Prometheus, Grafana, structlog |
-| **Infrastructure** | Docker, Docker Compose, Nginx |
+| **Infrastructure** | Nginx |
 | **Database (planned)** | PostgreSQL 15, Redis 7 |
 | **CI/CD** | GitHub Actions |
 | **Code Quality** | Ruff, MyPy, Black (Python) / oxlint (JS) |
@@ -163,30 +162,11 @@ See the [Future Plans](#future-plans) section below.
 
 ### Prerequisites
 
-- **Docker and Docker Compose** (recommended — zero extra config)
-- Or: Python 3.11+ and Node.js 20+
+- Python 3.11+ and Node.js 20+
 
 ---
 
-### Option 1 — Docker Compose (Recommended)
-
-```bash
-git clone https://github.com/GITtridib22/STAMPER_TSLR.git
-cd STAMPER_TSLR
-docker-compose up -d --build
-curl http://localhost:8000/api/health
-```
-
-| Service | URL |
-|---------|-----|
-| 🖥️ Frontend Dashboard | http://localhost:5173 |
-| 📖 API Docs (Swagger) | http://localhost:8000/docs |
-| 📊 Prometheus | http://localhost:9091 |
-| 📈 Grafana | http://localhost:3000 (admin / admin) |
-
----
-
-### Option 2 — Local Development
+### Option 1 — Local Development
 
 ```bash
 # Backend
@@ -206,7 +186,7 @@ npm run dev
 
 ---
 
-### Option 3 — Automated Windows Setup
+### Option 2 — Automated Windows Setup
 
 ```powershell
 # Run from the project root
@@ -378,7 +358,6 @@ STAMPER_TSLR/
 │   ├── config.py            # Pydantic Settings (env / YAML)
 │   ├── monitoring.py        # Prometheus metrics, logging, health checks
 │   ├── sensor_data.csv      # Historical training data
-│   ├── Dockerfile           # Multi-stage build (builder → runtime)
 │   └── .env.example         # Environment variable template
 │
 ├── frontend/
@@ -387,7 +366,6 @@ STAMPER_TSLR/
 │   │   ├── App.css          # Component styles
 │   │   └── index.css        # Global design tokens
 │   ├── nginx.conf           # Production static serving
-│   ├── Dockerfile
 │   └── package.json
 │
 ├── monitoring/
@@ -402,7 +380,6 @@ STAMPER_TSLR/
 │   ├── test_api.py          # API integration tests
 │   └── test_ml_features.py  # ML contract tests
 │
-├── docker-compose.yml       # Full local stack
 ├── requirements.txt         # Python dependencies
 ├── pytest.ini
 ├── setup.ps1                # Windows one-click dev setup
