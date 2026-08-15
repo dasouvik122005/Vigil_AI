@@ -4,7 +4,7 @@ This file serves as a persistent memory and progress tracker for the Vigil AI pr
 
 ## Current State
 - **Project Goal**: Build an AI-powered Adaptive Decision Intelligence Platform (Hackathon Track 1).
-- **Repository**: Connected to `https://github.com/GITtridib22/Vigil_TSLR.git`
+- **Repository**: Connected to `https://github.com/dasouvik122005/Vigil_AI`
 - **Status**: The MVP prototype is built and running locally. Both FastAPI backend and Vite/React frontend are fully functional. README, requirements.txt, and setup.ps1 have been added for easier deployment.
 
 ## Next Steps
